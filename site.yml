@@ -1,0 +1,38 @@
+---
+- hosts: all
+  become: true
+  pre_tasks:
+
+  - name: Install updates for Fedora
+    ansible.builtin.dnf:
+      update_cache: yes
+      update_only: yes
+    when: ansible_facts['os_family'] == "RedHat"
+
+  - name: Install updates for Debian
+    ansible.builtin.apt:
+      update_cache: yes
+      upgrade: dist
+    when: ansible_facts['os_family'] == "Debian"
+
+- hosts: db_servers
+  become: true
+  tasks:
+
+  - name: install mariadb on db servers
+    ansible.builtin.dnf:
+      name: mariadb
+      state: latest
+    when: ansible_facts['os_family'] == "RedHat"
+
+- hosts: web_servers
+  become: true
+  tasks:
+
+  - name: Install apache on web servers
+    ansible.builtin.apt:
+      name:
+        - apache2
+        - libapache2-mod-php
+      state: latest
+    when: ansible_facts['os_family'] == "Debian"
