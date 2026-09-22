@@ -62,6 +62,7 @@
     ansible.builtin.service:
       name: httpd
       state: started
+      enabled: true
     when: ansible_facts['os_family'] == "RedHat"
 
   - name: Change email address for apache admin (Fedora)
@@ -74,10 +75,11 @@
     when: ansible_facts['os_family'] == "RedHat"
 
   - name: restart httpd service (Fedora)
-    tags: apache
+    tags: apache,fedora
     ansible.builtin.service:
       name: httpd
       state: restarted
+      enabled: true
     when: httpd_serveradmin.changed
 
   - name: copy default html file for web site
@@ -88,3 +90,12 @@
       owner: root
       group: root
       mode: 0644
+
+  - name: Configure firewalld (RedHat)
+    tags: apache,fedora
+    ansible.posix.firewalld:
+      service: http
+      permanent: true
+      immediate: true
+      state: enabled
+    when: ansible_facts['os_family'] == "RedHat"
