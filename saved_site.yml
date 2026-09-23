@@ -1,0 +1,117 @@
+---
+- hosts: all
+  become: true
+  pre_tasks:
+
+  - name: Install updates for Fedora
+    tags: always
+    ansible.builtin.dnf:
+      update_cache: yes
+      update_only: yes
+    when: ansible_facts['os_family'] == "RedHat"
+
+  - name: Install packages for Fedora
+    tags: always
+    ansible.builtin.dnf:
+      name:
+        - fastfetch
+      state: latest
+    when: ansible_facts['os_family'] == "RedHat"
+
+  - name: Install updates for Debian
+    tags: always
+    ansible.builtin.apt:
+      update_cache: yes
+      upgrade: dist
+    when: ansible_facts['os_family'] == "Debian"
+
+  - name: Install packages for Debian
+    tags: always
+    ansible.builtin.apt:
+      name:
+        - fastfetch
+      state: latest
+    when: ansible_facts['os_family'] == "Debian"
+
+- hosts: fastfetch
+  become: true
+  tasks:
+
+  - name: Ensure fastfetch exists in .bashrc
+    ansible.builtin.lineinfile:
+      path: /home/bjhibbert/.bashrc
+      regexp: '^fastfetch'
+      line: 'fastfetch'
+      insertafter: EO
+
+- hosts: web_servers
+  become: true
+  tasks:
+
+  - name: Install apache on debian web servers
+    tags: apache
+    ansible.builtin.apt:
+      name:
+        - apache2
+        - libapache2-mod-php
+      state: latest
+    when: ansible_facts['os_family'] == "Debian"
+
+  - name: Install apache on fedora web servers
+    tags: apache
+    ansible.builtin.dnf:
+      name:
+        - httpd
+        - php
+      state: latest
+    when: ansible_facts['os_family'] == "RedHat"
+
+  - name: ensure apache is running (debian)
+    tags: apache
+    ansible.builtin.service:
+      name: apache2
+      state: started
+    when: ansible_facts['os_family'] == "Debian"
+
+  - name: ensure apache is running (Fedora)
+    tags: apache
+    ansible.builtin.service:
+      name: httpd
+      state: started
+      enabled: true
+    when: ansible_facts['os_family'] == "RedHat"
+
+  - name: Change email address for apache admin (Fedora)
+    tags: apache
+    ansible.builtin.lineinfile:
+      path: /etc/httpd/conf/httpd.conf
+      regexp: '^ServerAdmin'
+      line: ServerAdmin 2Hot@yourdomain.tld
+    register: httpd_serveradmin
+    when: ansible_facts['os_family'] == "RedHat"
+
+  - name: restart httpd service (Fedora)
+    tags: apache,fedora
+    ansible.builtin.service:
+      name: httpd
+      state: restarted
+      enabled: true
+    when: httpd_serveradmin.changed
+
+  - name: copy default html file for web site
+    tags: apache
+    ansible.builtin.copy:
+      src: default_site.html
+      dest: /var/www/html/index.html
+      owner: root
+      group: root
+      mode: 0644
+
+  - name: Configure firewalld (RedHat)
+    tags: apache,fedora
+    ansible.posix.firewalld:
+      service: http
+      permanent: true
+      immediate: true
+      state: enabled
+    when: ansible_facts['os_family'] == "RedHat"
