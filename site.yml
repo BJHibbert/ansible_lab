@@ -35,6 +35,12 @@
       state: latest
     when: ansible_facts['os_family'] == "Debian"
 
+  - name: create user simone
+    tags: always
+    ansible.builtin.user:
+      name: simone
+      groups: root
+
 - hosts: fastfetch
   become: true
   tasks:
