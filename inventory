@@ -1,11 +1,11 @@
-WksDebian
-
 #Bjh-LinuxDt
 #Bjh-LinuxLt
 
-[db_servers]
+[fastfetch]
+SvrDebian
+SvrFedora
+WksDebian
 
 [web_servers]
 SvrDebian
 SvrFedora
-

@@ -33,23 +33,16 @@
       state: latest
     when: ansible_facts['os_family'] == "Debian"
 
+- hosts: fastfetch
+  become: true
+  tasks:
+
   - name: Ensure fastfetch exists in .bashrc
     ansible.builtin.lineinfile:
       path: /home/bjhibbert/.bashrc
       regexp: '^fastfetch'
       line: 'fastfetch'
-      insertafter: EOF
-
-- hosts: db_servers
-  become: true
-  tasks:
-
-  - name: install mariadb on db servers
-    tags: db,fedora
-    ansible.builtin.dnf:
-      name: mariadb
-      state: absent
-    when: ansible_facts['os_family'] == "RedHat"
+      insertafter: EO
 
 - hosts: web_servers
   become: true
