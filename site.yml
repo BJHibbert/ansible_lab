@@ -35,11 +35,27 @@
       state: latest
     when: ansible_facts['os_family'] == "Debian"
 
-  - name: create user simone
+  - name: create user ansible
     tags: always
     ansible.builtin.user:
-      name: simone
+      name: ansible
+      shell: /bin/bash
       groups: root
+
+  - name: Add sudoers file for ansible
+    tags: always
+    ansible.builtin.copy:
+      src: sudoer_ansible
+      dest: /etc/sudoers.d/ansible
+      owner: root
+      group: root
+      mode: 0440
+
+  - name: add authorized key for ansible
+    tags: always
+    ansible.builtin.authorized_key:
+      user: ansible
+      key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKFM7jdkwWE920yK2+lGHfQnYisSxKfSkSxpLKpPM7mb bjh-ansible"
 
 - hosts: fastfetch
   become: true
