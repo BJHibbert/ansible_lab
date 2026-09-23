@@ -10,12 +10,35 @@
       update_only: yes
     when: ansible_facts['os_family'] == "RedHat"
 
+  - name: Install packages for Fedora
+    tags: always
+    ansible.builtin.dnf:
+      name:
+        - fastfetch
+      state: latest
+    when: ansible_facts['os_family'] == "RedHat"
+
   - name: Install updates for Debian
     tags: always
     ansible.builtin.apt:
       update_cache: yes
       upgrade: dist
     when: ansible_facts['os_family'] == "Debian"
+
+  - name: Install packages for Debian
+    tags: always
+    ansible.builtin.apt:
+      name:
+        - fastfetch
+      state: latest
+    when: ansible_facts['os_family'] == "Debian"
+
+  - name: Ensure fastfetch exists in .bashrc
+    ansible.builtin.lineinfile:
+      path: /home/bjhibbert/.bashrc
+      regexp: '^fastfetch'
+      line: 'fastfetch'
+      insertafter: EOF
 
 - hosts: db_servers
   become: true
