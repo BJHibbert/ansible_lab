@@ -25,14 +25,8 @@
 
 - hosts: fastfetch
   become: true
-  tasks:
-
-  - name: Ensure fastfetch exists in .bashrc
-    ansible.builtin.lineinfile:
-      path: /home/bjhibbert/.bashrc
-      regexp: '^fastfetch'
-      line: 'fastfetch'
-      insertafter: EO
+  roles:
+    - fastfetch
 
 - hosts: web_servers
   become: true
