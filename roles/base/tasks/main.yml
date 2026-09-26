@@ -1,4 +1,4 @@
-- name: base:Install packages for Fedora
+- name: Install packages for Fedora
   tags: always
   ansible.builtin.dnf:
     name:
@@ -16,7 +16,7 @@
     state: latest
   when: ansible_facts['os_family'] == "Debian"
 
--  name: create user ansible
+-  name: Create user ansible
    tags: always
    ansible.builtin.user:
      name: ansible
@@ -32,7 +32,7 @@
     group: root
     mode: 0440
 
-- name: add authorized key for ansible
+- name: Add authorized key for ansible
   tags: always
   ansible.builtin.authorized_key:
     user: ansible
