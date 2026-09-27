@@ -1,52 +1,23 @@
-- name: Install apache on debian web servers
+- name: Install apache on web servers
   tags: apache
-  ansible.builtin.apt:
-    name:
-      - apache2
-      - libapache2-mod-php
+  ansible.builtin.package:
+    name: "{{ apache_package }}"
     state: latest
-  when: ansible_facts['os_family'] == "Debian"
 
-- name: Install apache on fedora web servers
-  tags: apache
-  ansible.builtin.dnf:
-    name:
-      - httpd
-      - php
-    state: latest
-  when: ansible_facts['os_family'] == "RedHat"
-
-- name: ensure apache is running (debian)
+- name: ensure apache is running on web servers
   tags: apache
   ansible.builtin.service:
-    name: apache2
+    name: "{{ apache_service }}"
     state: started
-  when: ansible_facts['os_family'] == "Debian"
-
-- name: ensure apache is running (Fedora)
-  tags: apache
-  ansible.builtin.service:
-    name: httpd
-    state: started
-    enabled: true
-  when: ansible_facts['os_family'] == "RedHat"
 
 - name: Change email address for apache admin (Fedora)
   tags: apache
   ansible.builtin.lineinfile:
     path: /etc/httpd/conf/httpd.conf
     regexp: '^ServerAdmin'
-    line: ServerAdmin 2Hot@yourdomain.tld
-  register: httpd_serveradmin
+    line: ServerAdmin SugarBooty@yourdomain.tld
+  notify: restart_apache
   when: ansible_facts['os_family'] == "RedHat"
-
-- name: restart httpd service (Fedora)
-  tags: apache,fedora
-  ansible.builtin.service:
-    name: httpd
-    state: restarted
-    enabled: true
-  when: httpd_serveradmin.changed
 
 - name: copy default html file for web site
   tags: apache
@@ -65,4 +36,3 @@
     immediate: true
     state: enabled
   when: ansible_facts['os_family'] == "RedHat"
-
