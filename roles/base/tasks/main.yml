@@ -2,6 +2,7 @@
   tags: always
   ansible.builtin.dnf:
     name:
+      - dnf-utils
       - fastfetch
       - nano
     state: latest
