@@ -1,3 +1,2 @@
 # ansible_lab
-Git repository for Ansible Automation Made Easy
-
+Git repository for the ***Ansible Automation Made Easy*** online course
