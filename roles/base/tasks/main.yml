@@ -1,10 +1,17 @@
+- name: install common named apps on all systems
+  tags: always
+  ansible.builtin.package:
+    name:
+      - fastfetch
+      - nano
+      - neovim
+    state: latest
+
 - name: Install packages for Fedora
   tags: always
   ansible.builtin.dnf:
     name:
       - dnf-utils
-      - fastfetch
-      - nano
     state: latest
   when: ansible_facts['os_family'] == "RedHat"
 
@@ -12,8 +19,7 @@
   tags: always
   ansible.builtin.apt:
     name:
-      - fastfetch
-      - vim
+      - nala
     state: latest
   when: ansible_facts['os_family'] == "Debian"
 
