@@ -29,6 +29,7 @@
      name: ansible
      shell: /bin/bash
      groups: root
+     uid: 789
 
 - name: Add sudoers file for ansible
   tags: always
