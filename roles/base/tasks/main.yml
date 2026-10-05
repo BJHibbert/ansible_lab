@@ -23,13 +23,26 @@
     state: latest
   when: ansible_facts['os_family'] == "Debian"
 
--  name: Create user ansible
-   tags: always
-   ansible.builtin.user:
-     name: ansible
-     shell: /bin/bash
-     groups: root
-     uid: 789
+- name: Create user ansible
+  tags: always
+  ansible.builtin.user:
+    name: ansible
+    shell: /bin/bash
+    groups: root
+    uid: 789
+
+- name: Create custom ansible group id
+  ansible.builtin.group:
+    name: ansible
+    gid: 789
+
+- name: Set ownership on ansible home
+  ansible.builtin.file:
+    path: /home/ansible
+    state: directory
+    owner: ansible
+    group: ansible
+    recurse: true
 
 - name: Add sudoers file for ansible
   tags: always

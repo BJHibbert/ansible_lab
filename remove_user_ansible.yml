@@ -1,25 +1,6 @@
 ---
 - hosts: all
   become: true
-  pre_tasks:
-
-  - name: Install updates for Fedora
-    tags: always
-    ansible.builtin.dnf:
-      name: "*"
-      state: latest
-      update_cache: yes
-    when: ansible_facts['os_family'] == "RedHat"
-
-  - name: Install updates for Debian
-    tags: always
-    ansible.builtin.apt:
-      update_cache: yes
-      upgrade: dist
-    when: ansible_facts['os_family'] == "Debian"
-
-- hosts: all
-  become: true
   tasks:
 
   - name: Remove ansible user and home directory
@@ -29,3 +10,9 @@
       remove: true
       force: true
 
+  - name: Remove simone user and home directory
+    ansible.builtin.user:
+      name: simone
+      state: absent
+      remove: true
+      force: true
